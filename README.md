@@ -7,7 +7,10 @@
             <a href="#introduction-to-openlane-flow">Introduction to Openlane Flow</a>
         </li>
         <li>
-            <a href="#overview-of-physical-design-flow">Overview of Physical Design Flow</a>
+            <a href="#physical-design-flow">Physical Design Flow</a>
+        </li>
+        <li>
+            <a href="#lef-overview">LEF Overview</a>
         </li>
     </ol>
 </details>
@@ -18,7 +21,7 @@ Openlane is built around Skywater 130nm process node and is capable of performin
 ![Openlane_Flow](https://www.chipsalliance.org/news/improving-the-openlane-asic-build-flow-with-open-source-systemverilog-support/openlane-flow.png)
 Image Coutersy: [Chips Alliance](https://www.chipsalliance.org/news/improving-the-openlane-asic-build-flow-with-open-source-systemverilog-support/)
 
-### Overview of Physical Design Flow
+### Physical Design Flow
 Place and Route (PnR) is the core of any ASIC implementation and Openlane flow integrates into it several key open source tools which perform each of the respective stages of PnR. Below are the stages and the respective tools that are called by openlane for the functionalities as described: 
 
 1. Synthesis
@@ -33,6 +36,16 @@ Place and Route (PnR) is the core of any ASIC implementation and Openlane flow i
 4. Clock Tree Synthesis (CTS)
 5. Routing
 6. GDSII generation
+
+Follow this link for brief overview on OpenLane and its installation: [Openlane docs](https://openlane.readthedocs.io/en/latest/)
+
+### LEF Overview
+For a PnR tool to correctly place and route a block (a macro or a std. cell), it doesn't need to know entire layout information of the block; just the pin positions, PR boundary is sufficient. These minimal and abstracted information is provided to the tool by the Library Exchange Format (LEF) file. LEF file also serves the purpose of protecting intellectual property and is basically of two types:
+- Cell LEF - It's an abstract view of the cell and only gives information about PR boundary, pin position and metal layer information of the cell.
+* Technology LEF - It contains information about available metal layer, via information, DRCs of particular technology used by placer and router etc.. The below diagram highlights the difference between a layout and a LEF (Image Courtesy: Google): <br>
+
+![image](https://user-images.githubusercontent.com/82756709/223063425-f41c19bf-6c9d-4222-9050-bb3887edb66b.png) <hr>
+
 
 
 
