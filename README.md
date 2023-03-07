@@ -19,6 +19,9 @@
         <li>
             <a href="#about-femtorv32">About FemtoRV32</a>
         </li>   
+         <li>
+            <a href="#standard-cell-layout-design-in-magic">Standard cell Layout design in Magic</a>
+        </li>   
     </ol>
 </details>
 
@@ -60,7 +63,8 @@ The goal of this project is to design a single height standard cell and plug thi
 
 ### Standard cell layout design in Magic
 1. #### Magic + skywater-PDK installation 
-        -
+   - Follow this blog for [magic vlsi + skywater-pdk local installation guide](https://lootr5858.wordpress.com/2020/10/06/magic-vlsi-skywater-pdk-local-installation-guide/)
+2. 
 
 
 
