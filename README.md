@@ -17,7 +17,7 @@
             <a href="#objective">Objective</a>
         </li>      
         <li>
-            <a href="#about-serv">About SERV</a>
+            <a href="#about-femtorv32">About FemtoRV32</a>
         </li>   
     </ol>
 </details>
@@ -54,10 +54,9 @@ Library Exchange Format (LEF) file serves the purpose of protecting intellectual
 ![image](https://user-images.githubusercontent.com/82756709/223063425-f41c19bf-6c9d-4222-9050-bb3887edb66b.png) <hr>
 
 ### Objective
-The goal of this project is to design a single height standard cell and plug this custom cell into a more complex design and perform its PnR in the Openlane Flow.The standard cell chosen is CMOS inverter and the design into which it is plugged is prebuilt [serv](https://github.com/olofk/serv) core.
+The goal of this project is to design a single height standard cell and plug this custom cell into a more complex design and perform its PnR in the Openlane Flow.The standard cell chosen is CMOS inverter and the design into which it is plugged is prebuilt [femtoRV32](https://github.com/BrunoLevy/learn-fpga/blob/master/FemtoRV/RTL/PROCESSOR/femtorv32_quark.v) core.
 
-### About SERV 
-SERV (<b>SE</b>rial <b>R</b>ISC <b>V</b> Core) is a bit serial CPU which means the datapath is 1 bit wide.
+### About FemtoRV32
 
 ### Standard cell layout design in Magic
 1. #### Magic + skywater-PDK installation 
