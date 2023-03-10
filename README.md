@@ -106,23 +106,38 @@ The goal of this project is to design a single height standard cell and plug thi
 
 ## Plugging Custom LEF to OpenLane
 
-<hr>
 Open OpenLane Directory and enter:
 
 ```bash
 make mount
 ```
 
-To run in interactive mode
+List of commands:
+
+```bash
+
+./flow.tcl -design femto -init_design_config -add_to_designs
+./flow.tcl -design femto
+
+```
+
+### In Interactive mode
 
 ```bash
 ./flow.tcl -interactive
 ```
 
-<b>Note 1:</b> Now the run the commands in the following sequence and no steps should be skipped
+Load the package file
 
 ```bash
-$ prep -design femto -tag myrun -init_design_config
+package require openlane
+0.9
+```
+
+<b>Note 1:</b> Now the run the commands in the following sequence and ensure no steps are skipped
+
+```bash
+prep -design femto -tag full_guide
 ```
 
 ![interactive_flow.png](image.png)
@@ -130,7 +145,128 @@ $ prep -design femto -tag myrun -init_design_config
 Include the below command to include the additional lef (inv.lef) into the flow:
 
 ```bash
-% set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
-% add_lefs -src $lefs
+set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
+add_lefs -src $lefs
 
 ```
+
+![adding_lefs.png](image.png)
+
+## Synthesis
+
+### Review of files and Synthesis step:
+
+
+```bash
+run_synthesis
+```
+
+![synthesis.png](image.png)
+
+A "runs" folder is created under femto folder
+
+![runs_synth.png](image.png)
+
+Since we have used a -tag name to be full_guide, a folder with tag_name is created, if tag name is not mentioned a folder titled "today_date..." will be the directory under femto
+
+![tag_name.png](image.png)
+
+> presynthesis
+
+![preSynth.png](image.png)
+
+> post-synthesis
+
+![postSynth.png](image.png)
+
+
+<b>Calculation of Flop ratio</b>
+
+```math
+Flop ratio = Number of D Flip flops 
+             ______________________
+             Total Number of cells
+
+
+dfxtp_4 = 1178,
+Number of cells = 6709,
+Flop ratio = 1178/6709 = 0.1755 = 17.55%
+```
+
+## Floorplanning
+
+The objective is to design the layout of silicon area and establish a reliable power distribution network (PDN) for powering the various components of the synthesized netlist. Prior to placement, it is essential to determine the macro placement and blockages to ensure a compliant GDS file. <br>
+To achieve this, a ring is created that connects to the pads to enable the transfer of power around the edges of the chip. Additionally, power straps are integrated to deliver power to the center of the chip through the use of higher metal layers, which minimizes issues related to IR drop and electro-migration.
+
+```bash
+run_floorplan
+```
+
+![floorplan.png](image.png)
+
+### Floorplanning Considerations
+
+<b>Two parameters are of importance:</b>
+
+### Utilization Factor and Aspect Ratio
+
+```math
+Utilisation Factor =  Area occupied by netlist
+                     __________________________
+                        Total area of core
+
+Aspect Ratio =  Height
+               ________
+                Width
+```
+
+A Utilisation Factor of 1 signifies 100% utilisation leaving no space for extra cells such as buffer. However, practically, the Utilisation Factor is 0.5-0.6. Likewise, an Aspect ratio of 1 implies that the chip is square shaped. Any value other than 1 implies rectanglular chip.
+
+Post the floorplan run, a .def file will have been created within the <code>results/floorplan</code> directory. To view the floorplan, Magic is invoked after moving to the <code>results/floorplan</code> directory:
+
+```bash
+magic -T /home/gagana/OpenLane/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.max.lef def read femto.def
+```
+
+#### <b>Helpfull Commands while exploring Magic </b>
+
+- Zoom in (z)
+- Zoom out (shift + z)
+- Full view (v)
+- Select region (s)
+
+Various components can be identified by selecting and typing <code>what</code> in the tkcon window.
+
+![selection.png](image.png)
+![tkcon_window.png](image.png)
+
+## Placement
+
+The objective of placement is the convergence of overflow value. If overflow value progressively reduces during the placement run it implies that the design will converge and placement will be successful
+
+```bash
+run_placement
+```
+![placement.png](image.png)
+
+Postplacement the layout can be viewed in magic, by invoking Magic in <code>results/placement</code> and running:
+
+```bash
+magic -T /home/gagana/OpenLane/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.max.lef def read femto.def
+```
+
+<b> layout </b>
+
+![placement_layout.png](image.png)
+![placement_expand.png](image.png)
+
+<b> Note 2</b>:
+Power distribution network generation is usually a part of the floorplan step. However, in the openLANE flow, floorplan does not generate PDN. The steps are - floorplan, placement CTS and then PDN
+
+
+
+
+
+
+
+
