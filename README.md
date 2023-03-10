@@ -132,7 +132,7 @@ The first decision in synthesis is determining the optimal synthesis strategy SY
 ```bash
 ./flow.tcl -design design_name -synth_explore
 ```
-![synth_explore.png](image.png)
+![synth_explore.png](https://github.com/gagana-05/Term-Project/blob/main/images/synth_explore.png)
 
 ### Regression and exploration
 
@@ -267,7 +267,7 @@ The objective of placement is the convergence of overflow value. If overflow val
 ```bash
 run_placement
 ```
-![placement.png](https://gi)thub.com/gagana-05/Term-Project/blob/main/images/placement.png)
+![placement.png](https://github.com/gagana-05/Term-Project/blob/main/images/placement.png)
 
 Postplacement the layout can be viewed in magic, by invoking Magic in <code>results/placement</code> and running:
 
@@ -290,50 +290,51 @@ Power distribution network generation is usually a part of the floorplan step. H
 
 Very Helpful source : [Timing Closure of OpenSource Designs](https://docs.google.com/document/d/13J1AY1zhzxur8vaFs3rRW9ZWX113rSDs63LezOOoXZ8/edit#)
 
+[Issues in detail with screenshots](https://docs.google.com/document/d/1WPB9M_3ZLJP0JGJ7WuvxG-3gWosTZSsQpdfXbrL1UGY/edit?usp=sharing) <br>
+
 Issue #1 <br>
 config.json file
 
 ``` json
+{
+    "DESIGN_NAME": "femto",
+    "VERILOG_FILES": "dir::src/*.v",
+    "CLOCK_PORT": "clk",
+    "CLOCK_PERIOD": 10.0,
+    "DESIGN_IS_CORE": true
+}
 ```
 
 Command:
 ``` bash 
-./flow.tcl -design femto <br>
+./flow.tcl -design femto 
 ```
 OpenLane Flow: <span style="color:red"> Flow Failed </span>
 
-![flow_fail.png](image.png)
-
-25-rcx_sta.worst_slack.rpt<br>
-![flow_fail_slack.png](image.png)
-
-metrics.csv <br>
-![flow_fail_metrics.png](image.png)
+#### <b> Two files of importance:</b>
+> 25-rcx_sta.worst_slack.rpt<br>
+> metrics.csv <br>
 
 Since we don’t have a hard requirement for clock frequency we can adjust the clock period to eliminate setup violations.
-
 Tried setting up the clock time period to 15 ns and it worked!
+
+<b>Setting</b>:
+"CLOCK_PERIOD": 15.0
+
 
 Command: 
 ``` bash 
-./flow.tcl -design femto <br>
+./flow.tcl -design femto 
 ```
 OpenLane Flow: <span style="color:green"> Flow Complete </span> <span style="color:yellow"> with [WARNING] fanout violation</span> 
 
-![flow_violation.png](image.png)
-
-25-rcx_sta.worst_slack.rpt<br>
-![flow_violation_slack.png](image.png)
-
-metrics.csv <br>
-![flow_violation_metrics.png](image.png)
-
 Issue #2 : Configuring the config.json file to remove fanout violation
 
-25-rcx_sta.max.rpt <br>
+#### <b> Two files of importance: </b>
+> 25-rcx_sta.max.rpt <br>
+> 25-rcx_sta.worst_slack.rpt
 
-![limit_10](image.png)
-
+OpenLane Flow:
 max fanout violation count : <b>91</b>
 
 
@@ -341,25 +342,13 @@ max fanout violation count : <b>91</b>
 "SYNTH_MAX_FANOUT": 20
 
 OpenLane Flow: 
-
-25-rcx_sta.max.rpt <br>
-![limit_20](image.png)
 max fanout violation count: <b>12</b>
-
-
-25-rcx_sta.worst_slack.rpt
 
 <b>Setting:</b>
 "SYNTH_MAX_FANOUT": 30 <br>
 
-25-rcx_sta.max.rpt <br>
-
-![limit_20](image.png)
-
-max fanout violation count: <b>12</b>
-
-
-25-rcx_sta.worst_slack.rpt
+OpenLane Flow:
+max fanout violation count: <b>6</b>
 
 Observation: 
 - We observe that as the limit to max fanout at output is increased, fanout after the design flow also increases. (Not sure why?)
