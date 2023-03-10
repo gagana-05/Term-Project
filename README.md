@@ -140,7 +140,7 @@ package require openlane
 prep -design femto -tag full_guide
 ```
 
-![interactive_flow.png](image.png)
+![interactive_flow.png](https://github.com/gagana-05/Term-Project/blob/main/images/interactive_flow.png)
 
 Include the below command to include the additional lef (inv.lef) into the flow:
 
@@ -150,7 +150,7 @@ add_lefs -src $lefs
 
 ```
 
-![adding_lefs.png](image.png)
+![adding_lefs.png](https://github.com/gagana-05/Term-Project/blob/main/images/adding_lefs.png)
 
 ## Synthesis
 
@@ -161,28 +161,28 @@ add_lefs -src $lefs
 run_synthesis
 ```
 
-![synthesis.png](image.png)
+![synthesis.png](https://github.com/gagana-05/Term-Project/blob/main/images/synthesis.png)
 
 A "runs" folder is created under femto folder
 
-![runs_synth.png](image.png)
+![runs_synth.png](https://github.com/gagana-05/Term-Project/blob/main/images/runs_synth.png)
 
 Since we have used a -tag name to be full_guide, a folder with tag_name is created, if tag name is not mentioned a folder titled "today_date..." will be the directory under femto
 
-![tag_name.png](image.png)
+![tag_name.png](https://github.com/gagana-05/Term-Project/blob/main/images/tag_name.png)
 
 > presynthesis
 
-![preSynth.png](image.png)
+![preSynth.png](https://github.com/gagana-05/Term-Project/blob/main/images/preStat.png)
 
 > post-synthesis
 
-![postSynth.png](image.png)
+![postSynth.png](https://github.com/gagana-05/Term-Project/blob/main/images/postSynth.png)
 
 
 <b>Calculation of Flop ratio</b>
 
-```math
+```text
 Flop ratio = Number of D Flip flops 
              ______________________
              Total Number of cells
@@ -202,7 +202,7 @@ To achieve this, a ring is created that connects to the pads to enable the trans
 run_floorplan
 ```
 
-![floorplan.png](image.png)
+![floorplan.png](https://github.com/gagana-05/Term-Project/blob/main/images/floorplan.png)
 
 ### Floorplanning Considerations
 
@@ -210,7 +210,7 @@ run_floorplan
 
 ### Utilization Factor and Aspect Ratio
 
-```math
+```code
 Utilisation Factor =  Area occupied by netlist
                      __________________________
                         Total area of core
@@ -228,6 +228,9 @@ Post the floorplan run, a .def file will have been created within the <code>resu
 magic -T /home/gagana/OpenLane/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.max.lef def read femto.def
 ```
 
+### layout
+![floorplan_layout.png](https://github.com/gagana-05/Term-Project/blob/main/images/floorplan_layout.png)
+
 #### <b>Helpfull Commands while exploring Magic </b>
 
 - Zoom in (z)
@@ -237,8 +240,8 @@ magic -T /home/gagana/OpenLane/pdks/sky130A/libs.tech/magic/sky130A.tech lef rea
 
 Various components can be identified by selecting and typing <code>what</code> in the tkcon window.
 
-![selection.png](image.png)
-![tkcon_window.png](image.png)
+![selection.png](https://github.com/gagana-05/Term-Project/blob/main/images/selection_area.png)
+![tkcon_window.png](https://github.com/gagana-05/Term-Project/blob/main/images/tkcon_window.png)
 
 ## Placement
 
@@ -247,7 +250,7 @@ The objective of placement is the convergence of overflow value. If overflow val
 ```bash
 run_placement
 ```
-![placement.png](image.png)
+![placement.png](https://gi)thub.com/gagana-05/Term-Project/blob/main/images/placement.png)
 
 Postplacement the layout can be viewed in magic, by invoking Magic in <code>results/placement</code> and running:
 
@@ -257,8 +260,10 @@ magic -T /home/gagana/OpenLane/pdks/sky130A/libs.tech/magic/sky130A.tech lef rea
 
 <b> layout </b>
 
-![placement_layout.png](image.png)
-![placement_expand.png](image.png)
+![placement_layout.png](https://github.com/gagana-05/Term-Project/blob/main/images/placement_layout.png)
+
+> Expanded View
+![placement_expand.png](https://github.com/gagana-05/Term-Project/blob/main/images/placement_expand.png)
 
 <b> Note 2</b>:
 Power distribution network generation is usually a part of the floorplan step. However, in the openLANE flow, floorplan does not generate PDN. The steps are - floorplan, placement CTS and then PDN
