@@ -151,7 +151,7 @@ package require openlane
 0.9
 ```
 
-<b>Note 1:</b> Now the run the commands in the following sequence and ensure no steps are skipped
+<b>Note 1:</b> Now run the commands in the following sequence and ensure no steps are skipped
 
 ```bash
 prep -design femto -tag full_guide
@@ -161,10 +161,9 @@ prep -design femto -tag full_guide
 
 Include the below command to include the additional lef (inv.lef) into the flow:
 
-```bash
+```text
 set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
 add_lefs -src $lefs
-
 ```
 
 ![adding_lefs.png](https://github.com/gagana-05/Term-Project/blob/main/images/adding_lefs.png)
@@ -241,7 +240,7 @@ A Utilisation Factor of 1 signifies 100% utilisation leaving no space for extra 
 
 Post the floorplan run, a .def file will have been created within the <code>results/floorplan</code> directory. To view the floorplan, Magic is invoked after moving to the <code>results/floorplan</code> directory:
 
-```bash
+```text
 magic -T /home/gagana/OpenLane/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.max.lef def read femto.def
 ```
 
@@ -271,7 +270,7 @@ run_placement
 
 Postplacement the layout can be viewed in magic, by invoking Magic in <code>results/placement</code> and running:
 
-```bash
+```text
 magic -T /home/gagana/OpenLane/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.max.lef def read femto.def
 ```
 
