@@ -90,6 +90,10 @@ The goal of this project is to design a single height standard cell and plug thi
 
 ### About FemtoRV32
 
+[FemtoRV](https://github.com/BrunoLevy/learn-fpga/blob/master/FemtoRV/README.md) is a minimalistic RISC-V design, with easy-to-read Verilog sources directly written from the RISC-V specification. The most elementary version (quark), an RV32I core, weights 400 lines of VERILOG (documented version), and 100 lines if you remove the comments. We will be using quark version for our custom layout.
+
+> List of issues we faced while sythesizing the available code: <a href="challenges"> Challenges </a>
+
 ### Standard cell layout design in Magic
 
 1. #### Magic + skywater-PDK installation
@@ -121,7 +125,20 @@ List of commands:
 
 ```
 
-### In Interactive mode
+## Synthesis Exploration 
+
+The first decision in synthesis is determining the optimal synthesis strategy SYNTH_STRATEGY for your design. For that purpose there is a flag in the flow.tcl script, -synth_explore that runs a synthesis strategy exploration and reports the results in a table in a html file under <code> femto/reports/</code>.
+
+```bash
+./flow.tcl -design design_name -synth_explore
+```
+![synth_explore.png](image.png)
+
+### Regression and exploration
+
+> [Issues #3](#issue-3)
+
+## Interactive mode
 
 ```bash
 ./flow.tcl -interactive
@@ -267,6 +284,95 @@ magic -T /home/gagana/OpenLane/pdks/sky130A/libs.tech/magic/sky130A.tech lef rea
 
 <b> Note 2</b>:
 Power distribution network generation is usually a part of the floorplan step. However, in the openLANE flow, floorplan does not generate PDN. The steps are - floorplan, placement CTS and then PDN
+
+
+## Challenges
+
+Very Helpful source : [Timing Closure of OpenSource Designs](https://docs.google.com/document/d/13J1AY1zhzxur8vaFs3rRW9ZWX113rSDs63LezOOoXZ8/edit#)
+
+Issue #1 <br>
+config.json file
+
+``` json
+```
+
+Command:
+``` bash 
+./flow.tcl -design femto <br>
+```
+OpenLane Flow: <span style="color:red"> Flow Failed </span>
+
+![flow_fail.png](image.png)
+
+25-rcx_sta.worst_slack.rpt<br>
+![flow_fail_slack.png](image.png)
+
+metrics.csv <br>
+![flow_fail_metrics.png](image.png)
+
+Since we don’t have a hard requirement for clock frequency we can adjust the clock period to eliminate setup violations.
+
+Tried setting up the clock time period to 15 ns and it worked!
+
+Command: 
+``` bash 
+./flow.tcl -design femto <br>
+```
+OpenLane Flow: <span style="color:green"> Flow Complete </span> <span style="color:yellow"> with [WARNING] fanout violation</span> 
+
+![flow_violation.png](image.png)
+
+25-rcx_sta.worst_slack.rpt<br>
+![flow_violation_slack.png](image.png)
+
+metrics.csv <br>
+![flow_violation_metrics.png](image.png)
+
+Issue #2 : Configuring the config.json file to remove fanout violation
+
+25-rcx_sta.max.rpt <br>
+
+![limit_10](image.png)
+
+max fanout violation count : <b>91</b>
+
+
+<b>Setting</b>:
+"SYNTH_MAX_FANOUT": 20
+
+OpenLane Flow: 
+
+25-rcx_sta.max.rpt <br>
+![limit_20](image.png)
+max fanout violation count: <b>12</b>
+
+
+25-rcx_sta.worst_slack.rpt
+
+<b>Setting:</b>
+"SYNTH_MAX_FANOUT": 30 <br>
+
+25-rcx_sta.max.rpt <br>
+
+![limit_20](image.png)
+
+max fanout violation count: <b>12</b>
+
+
+25-rcx_sta.worst_slack.rpt
+
+Observation: 
+- We observe that as the limit to max fanout at output is increased, fanout after the design flow also increases. (Not sure why?)
+
+We will try resolving this warning a little later and move on to next step of synthesizing the module
+
+#### Issue 3
+
+
+
+
+
+
 
 
 
