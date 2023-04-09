@@ -177,15 +177,10 @@ add_lefs -src $lefs
 run_synthesis
 ```
 
-![synthesis.png](https://github.com/gagana-05/Term-Project/blob/main/images/synthesis.png)
 
 A "runs" folder is created under femto folder
 
-![runs_synth.png](https://github.com/gagana-05/Term-Project/blob/main/images/runs_synth.png)
-
 Since we have used a -tag name to be full_guide, a folder with tag_name is created, if tag name is not mentioned a folder titled "today_date..." will be the directory under femto
-
-![tag_name.png](https://github.com/gagana-05/Term-Project/blob/main/images/tag_name.png)
 
 > presynthesis
 
@@ -217,8 +212,6 @@ To achieve this, a ring is created that connects to the pads to enable the trans
 ```bash
 run_floorplan
 ```
-
-![floorplan.png](https://github.com/gagana-05/Term-Project/blob/main/images/floorplan.png)
 
 ### Floorplanning Considerations
 
@@ -266,7 +259,6 @@ The objective of placement is the convergence of overflow value. If overflow val
 ```bash
 run_placement
 ```
-![placement.png](https://github.com/gagana-05/Term-Project/blob/main/images/placement.png)
 
 Postplacement the layout can be viewed in magic, by invoking Magic in <code>results/placement</code> and running:
 
@@ -275,8 +267,6 @@ magic -T /home/gagana/OpenLane/pdks/sky130A/libs.tech/magic/sky130A.tech lef rea
 ```
 
 <b> layout </b>
-
-![placement_layout.png](https://github.com/gagana-05/Term-Project/blob/main/images/placement_layout.png)
 
 > Expanded View
 ![placement_expand.png](https://github.com/gagana-05/Term-Project/blob/main/images/placement_expand.png)
