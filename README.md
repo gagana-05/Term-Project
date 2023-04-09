@@ -99,14 +99,51 @@ The goal of this project is to design a single height standard cell and plug thi
 1. #### Magic + skywater-PDK installation
 
    - Follow this blog for [magic vlsi + skywater-pdk local installation guide](https://lootr5858.wordpress.com/2020/10/06/magic-vlsi-skywater-pdk-local-installation-guide/)
+   - Or magic can also be invoked in pdks folder of Openlane installation directory: 
+   ```/OpenLane/pdks/sky130A/libs.tech/magic``` <br>
+   Under this directory run ```magic -T sky130A.tech &```
 
 2. #### Standard Cell layout
 
+We will be creating designs in single height standard cell format, so the dimensions needs to be multiple of the single height which for sky130 has a nomenclature of unithd with dimensions 0.46 x 2.72 (w x h) for sky130_fd_sc_hd PDK variant. Thus, step 1 is to create a bounding box of width 1.38 x 2.72 (3w x h). <br>
+
+- Not sure why this isn't working for me but we will see later, in magic tkcon window:
+
+``` text
+property FIXED_BBOX {0 0 138 272} 
+```
+- Followed by designing the inverter in magic, and making sure there are no DRC errors
+![inv_top_mag.png](https://github.com/gagana-05/Term-Project/blob/main/images/inv_top_mag.png)
+
+<b> Note: </b> <br>
+the layout is included in the repo can be viewed in magic layout window as magic -T sky130A.tech inv.mag &
+
+
 3. #### Create port definition
+
+Once the layout is ready, the next step is extracting the LEF file for the cell. However, certain properties and definitions need to be set to the pins of the cell which aid the placer and router tool. For LEF files, a cell that contains ports is written as a macro cell, and the ports are the declared PINs of the macro. Our objective is to extract LEF from a given layout (here of a simple CMOS inverter) in standard format. Defining port and setting correct class and use attributes to each port is the first step. The easiest way to define a port is through Magic Layout window and following are the steps:
+
+- In Magic Layout window, first source the .mag file for the design. Then Edit >> Text which opens up a dialogue box.
+
+- For each layer, make a box on that particular layer and input a label name along with a sticky label of the layer name with which the port needs to be associated, ensure the port enable checkbox box is checked and default checkbox is unchecked as shown below:
+
+Above two figures, port A ( in port ) and port Y ( out port ) are taken from the locali ( local interconnect ) layer. 
+
+Note:
+The number mentioned in the text area next to the enable checkbox defines the order in which the ports will be written in LEF file.
+
+For power and ground layer, can be done in same or different layer. Here, we have connected gnd and power are taken from metal 1 ( notice the text area beside sticky checkbox )
+
 
 4. #### Set port class and port use attributes
 
+Once the port definition is done, the next step is to set port class and port use attributes. The "class" and "use" properties of the port have no internal meaning to magic but are used by the LEF and DEF format read and write routines, and match the LEF/DEF CLASS and USE properties for macro cell pins.
+![port_def.png](https://github.com/gagana-05/Term-Project/blob/main/images/port_def.png)
+
 ### Defining and extracting LEF file in Magic
+
+Certain properties need to be set before writing the LEF. There are specific property names associated with the LEF format. Once the properties are set, lef write command write the LEF file with the same nomenclature as that of the magic layout file.
+
 
 ## Plugging Custom LEF to OpenLane
 
@@ -177,15 +214,10 @@ add_lefs -src $lefs
 run_synthesis
 ```
 
-![synthesis.png](https://github.com/gagana-05/Term-Project/blob/main/images/synthesis.png)
 
 A "runs" folder is created under femto folder
 
-![runs_synth.png](https://github.com/gagana-05/Term-Project/blob/main/images/runs_synth.png)
-
 Since we have used a -tag name to be full_guide, a folder with tag_name is created, if tag name is not mentioned a folder titled "today_date..." will be the directory under femto
-
-![tag_name.png](https://github.com/gagana-05/Term-Project/blob/main/images/tag_name.png)
 
 > presynthesis
 
@@ -217,8 +249,6 @@ To achieve this, a ring is created that connects to the pads to enable the trans
 ```bash
 run_floorplan
 ```
-
-![floorplan.png](https://github.com/gagana-05/Term-Project/blob/main/images/floorplan.png)
 
 ### Floorplanning Considerations
 
@@ -266,7 +296,6 @@ The objective of placement is the convergence of overflow value. If overflow val
 ```bash
 run_placement
 ```
-![placement.png](https://github.com/gagana-05/Term-Project/blob/main/images/placement.png)
 
 Postplacement the layout can be viewed in magic, by invoking Magic in <code>results/placement</code> and running:
 
@@ -275,8 +304,6 @@ magic -T /home/gagana/OpenLane/pdks/sky130A/libs.tech/magic/sky130A.tech lef rea
 ```
 
 <b> layout </b>
-
-![placement_layout.png](https://github.com/gagana-05/Term-Project/blob/main/images/placement_layout.png)
 
 > Expanded View
 ![placement_expand.png](https://github.com/gagana-05/Term-Project/blob/main/images/placement_expand.png)
