@@ -129,11 +129,15 @@ the layout is included in the repo can be viewed in magic layout window as magic
 
 Once the layout is ready, the next step is extracting the LEF file for the cell. However, certain properties and definitions need to be set to the pins of the cell which aid the placer and router tool. For LEF files, a cell that contains ports is written as a macro cell, and the ports are the declared PINs of the macro. Our objective is to extract LEF from a given layout (here of a simple CMOS inverter) in standard format. Defining port and setting correct class and use attributes to each port is the first step. The easiest way to define a port is through Magic Layout window and following are the steps:
 
-- In Magic Layout window, first source the .mag file for the design. Then ```Edit >> Text``` which opens up a dialogue box.
+- In Magic Layout window, first source the .mag file for the design. Then ```Edit >> Text``` which opens up a dialogue box. <br>
+
+![image](https://user-images.githubusercontent.com/82756709/230848333-0f928939-33f9-4b48-affb-6cc0188d0c85.png)
 
 - For each layer, make a box on that particular layer and input a label name along with a sticky label of the layer name with which the port needs to be associated, ensure the port enable checkbox box is checked and default checkbox is unchecked as shown below:
 
-Above two figures, port A ( in port ) and port Y ( out port ) are taken from the locali ( local interconnect ) layer. 
+Above two figures, port A ( in port ) and port Y ( out port ) are taken from the locali ( local interconnect ) layer. <br>
+
+![image](https://user-images.githubusercontent.com/82756709/230848131-58346f34-c80b-4516-ab5c-09f9e4babedd.png)
 
 Note:
 The number mentioned in the text area next to the enable checkbox defines the order in which the ports will be written in LEF file.
@@ -143,7 +147,7 @@ For power and ground layer, can be done in same or different layer. Here, we hav
 
 ### Set port class and port use attributes
 
-Once the port definition is done, the next step is to set port class and port use attributes. The "class" and "use" properties of the port have no internal meaning to magic but are used by the LEF and DEF format read and write routines, and match the LEF/DEF CLASS and USE properties for macro cell pins.
+Once the port definition is done, the next step is to set port class and port use attributes. The "class" and "use" properties of the port have no internal meaning to magic but are used by the LEF and DEF format read and write routines, and match the LEF/DEF CLASS and USE properties for macro cell pins. <hr>
 ![port_def.png](https://github.com/gagana-05/Term-Project/blob/main/images/port_def.png)
 
 ### Defining and extracting LEF file in Magic
@@ -458,6 +462,9 @@ Issue #3: Flow fails when executing run_routing in interactive flow
 
 ![image](https://user-images.githubusercontent.com/82756709/230842139-0e12f7a9-f118-49f9-a22f-d0ca92fb35d7.png)
 
+## References
+
+https://github.com/nickson-jose/vsdstdcelldesign
 
 
 
