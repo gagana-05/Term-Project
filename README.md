@@ -84,26 +84,53 @@ Library Exchange Format (LEF) file serves the purpose of protecting intellectual
 
 ![image](https://user-images.githubusercontent.com/82756709/223063425-f41c19bf-6c9d-4222-9050-bb3887edb66b.png) <hr>
 
-### Objective
+## Objective
 
 The goal of this project is to design a single height standard cell and plug this custom cell into a more complex design and perform its PnR in the Openlane Flow.The standard cell chosen is CMOS inverter and the design into which it is plugged is prebuilt [femtoRV32](https://github.com/BrunoLevy/learn-fpga/blob/master/FemtoRV/RTL/PROCESSOR/femtorv32_quark.v) core.
 
-### About FemtoRV32
+## About FemtoRV32
 
 [FemtoRV](https://github.com/BrunoLevy/learn-fpga/blob/master/FemtoRV/README.md) is a minimalistic RISC-V design, with easy-to-read Verilog sources directly written from the RISC-V specification. The most elementary version (quark), an RV32I core, weights 400 lines of VERILOG (documented version), and 100 lines if you remove the comments. We will be using quark version for our custom layout.
 
 > List of issues we faced while sythesizing the available code: <a href="challenges"> Challenges </a>
 
-### Standard cell layout design in Magic
+## Standard cell layout design in Magic
 
-1. #### Magic + skywater-PDK installation
+
+1. ### Magic + skywater-PDK installation
 
    - Follow this blog for [magic vlsi + skywater-pdk local installation guide](https://lootr5858.wordpress.com/2020/10/06/magic-vlsi-skywater-pdk-local-installation-guide/)
    - Or magic can also be invoked in pdks folder of Openlane installation directory: 
    ```/OpenLane/pdks/sky130A/libs.tech/magic``` <br>
    Under this directory run ```magic -T sky130A.tech &```
 
-2. #### Standard Cell layout
+2. ### Standard Cell layout
+
+The .mag file for CMOS inverter is sourced from [vsdstdcelldesign](https://github.com/nickson-jose/vsdstdcelldesign) by cloning it within the `Openlane` directory as follows or you can clone this repo as the necessary files are sourced to this repository as well :)
+
+```bash
+git clone https://github.com/nickson-jose/vsdstdcelldesign
+```
+
+To invoke the magic file, go to the `Openlane/vsdstdcelldesign` and run:
+
+```bash
+magic -T sky130A sky130_inv.mag
+```
+
+![inv_mag.png](image.png)
+
+Spice extraction: <br>
+run the following commands in tkcon window of Magic environment in order to extract spice file
+
+```text
+extract all
+ext2spice cthresh 0 rethresh 0
+ext2spice
+```
+
+you can see sky130_inv.spice file under `Openlane/vsdstdcelldesign/` directory
+
 
 We will be creating designs in single height standard cell format, so the dimensions needs to be multiple of the single height which for sky130 has a nomenclature of unithd with dimensions 0.46 x 2.72 (w x h) for sky130_fd_sc_hd PDK variant. Thus, step 1 is to create a bounding box of width 1.38 x 2.72 (3w x h). <br>
 
@@ -156,15 +183,13 @@ make mount
 List of commands:
 
 ```bash
-
 ./flow.tcl -design femto -init_design_config -add_to_designs
 ./flow.tcl -design femto
-
 ```
 
 ## Synthesis Exploration 
 
-The first decision in synthesis is determining the optimal synthesis strategy SYNTH_STRATEGY for your design. For that purpose there is a flag in the flow.tcl script, -synth_explore that runs a synthesis strategy exploration and reports the results in a table in a html file under <code> femto/reports/</code>.
+The first decision in synthesis is determining the optimal synthesis strategy SYNTH_STRATEGY for your design. For that purpose there is a flag in the flow.tcl script, -synth_explore that runs a synthesis strategy exploration and reports the results in a table in a html file under `femto/reports/`.
 
 ```bash
 ./flow.tcl -design design_name -synth_explore
@@ -268,7 +293,7 @@ Aspect Ratio =  Height
 
 A Utilisation Factor of 1 signifies 100% utilisation leaving no space for extra cells such as buffer. However, practically, the Utilisation Factor is 0.5-0.6. Likewise, an Aspect ratio of 1 implies that the chip is square shaped. Any value other than 1 implies rectanglular chip.
 
-Post the floorplan run, a .def file will have been created within the <code>results/floorplan</code> directory. To view the floorplan, Magic is invoked after moving to the <code>results/floorplan</code> directory:
+Post the floorplan run, a .def file will have been created within the `results/floorplan` directory. To view the floorplan, Magic is invoked after moving to the `results/floorplan` directory:
 
 ```text
 magic -T /home/gagana/OpenLane/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.max.lef def read femto.def
@@ -284,9 +309,11 @@ magic -T /home/gagana/OpenLane/pdks/sky130A/libs.tech/magic/sky130A.tech lef rea
 - Full view (v)
 - Select region (s)
 
-Various components can be identified by selecting and typing <code>what</code> in the tkcon window.
+Various components can be identified by selecting and typing `what` in the tkcon window.
 
 ![selection.png](https://github.com/gagana-05/Term-Project/blob/main/images/selection_area.png)
+
+> tkcon window <br>
 ![tkcon_window.png](https://github.com/gagana-05/Term-Project/blob/main/images/tkcon_window.png)
 
 ## Placement
@@ -297,7 +324,7 @@ The objective of placement is the convergence of overflow value. If overflow val
 run_placement
 ```
 
-Postplacement the layout can be viewed in magic, by invoking Magic in <code>results/placement</code> and running:
+Postplacement the layout can be viewed in magic, by invoking Magic in `results/placement` and running:
 
 ```text
 magic -T /home/gagana/OpenLane/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.max.lef def read femto.def
@@ -376,7 +403,8 @@ max fanout violation count: <b>12</b>
 OpenLane Flow:
 max fanout violation count: <b>6</b>
 
-Observation: 
+Observation:
+
 - We observe that as the limit to max fanout at output is increased, fanout after the design flow also increases. (Not sure why?)
 
 We will try resolving this warning a little later and move on to next step of synthesizing the module

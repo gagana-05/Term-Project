@@ -1,0 +1,13 @@
+{
+    "DESIGN_NAME": "femto",
+    "VERILOG_FILES": "dir::src/*.v",
+    "CLOCK_PORT": "clk",
+    "CLOCK_PERIOD": 15.0,
+    "DESIGN_IS_CORE": true,
+    "EXTRA_LEFS": "dir::src/*.lef",
+    "SYNTH_MAX_FANOUT": 50,
+    "LIB_TYPICAL": "dir::src/sky130/sky130_fd_sc_hd__typical.lib",
+    "LIB_SYNTH": "dir::src/sky130/sky130_fd_sc_hd__typical.lib",
+    "TEST_EXTERNAL_GLOB": "dir::../femto/src/*",
+    "SYNTH_DRIVING_CELL":"sky130_vsdinv"
+}

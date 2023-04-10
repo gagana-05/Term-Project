@@ -1,0 +1,7 @@
+{
+    "preload": {
+      "SYNTH_FLAT_TOP":[1,0],
+      "SYNTH_STRATEGY":["DELAY 4", "AREA 3"]
+      }
+}
+  
