@@ -28,8 +28,14 @@
         <li>
             <a href="#plugging-custom-lef-to-openlane">Plugging custom LEF to OpenLane</a>
         </li>
+         <li>
+            <a href = "#observation"> Observation</a>
+        </li>
+         <li>
+            <a href = "#team-members"> Team Members</a>
+        </li>
         <li>
-            <a href = "challenges"> Challenges</a>
+            <a href = "#challenges"> Challenges</a>
         </li>
     </ol>
 </details>
@@ -97,60 +103,33 @@ The goal of this project is to design a single height standard cell and plug thi
 ## Standard cell layout design in Magic
 
 
-1. ### Magic + skywater-PDK installation
+### Magic + skywater-PDK installation
 
    - Follow this blog for [magic vlsi + skywater-pdk local installation guide](https://lootr5858.wordpress.com/2020/10/06/magic-vlsi-skywater-pdk-local-installation-guide/)
    - Or magic can also be invoked in pdks folder of Openlane installation directory: 
    ```/OpenLane/pdks/sky130A/libs.tech/magic``` <br>
    Under this directory run ```magic -T sky130A.tech &```
-
-2. ### Standard Cell layout
-
-The .mag file for CMOS inverter is sourced from [vsdstdcelldesign](https://github.com/nickson-jose/vsdstdcelldesign) by cloning it within the `Openlane` directory as follows or you can clone this repo as the necessary files are sourced to this repository as well :)
-
-```bash
-git clone https://github.com/nickson-jose/vsdstdcelldesign
-```
-
-To invoke the magic file, go to the `Openlane/vsdstdcelldesign` and run:
-
-```bash
-magic -T sky130A sky130_inv.mag
-```
-
-![inv_mag.png](image.png)
-
-Spice extraction: <br>
-run the following commands in tkcon window of Magic environment in order to extract spice file
-
-```text
-extract all
-ext2spice cthresh 0 rethresh 0
-ext2spice
-```
-
-you can see sky130_inv.spice file under `Openlane/vsdstdcelldesign/` directory
-
-
+   
+### Standard Cell layout
 We will be creating designs in single height standard cell format, so the dimensions needs to be multiple of the single height which for sky130 has a nomenclature of unithd with dimensions 0.46 x 2.72 (w x h) for sky130_fd_sc_hd PDK variant. Thus, step 1 is to create a bounding box of width 1.38 x 2.72 (3w x h). <br>
-
 - Not sure why this isn't working for me but we will see later, in magic tkcon window:
-
 ``` text
 property FIXED_BBOX {0 0 138 272} 
 ```
 - Followed by designing the inverter in magic, and making sure there are no DRC errors
+<hr>
+
 ![inv_top_mag.png](https://github.com/gagana-05/Term-Project/blob/main/images/inv_top_mag.png)
 
 <b> Note: </b> <br>
 the layout is included in the repo can be viewed in magic layout window as magic -T sky130A.tech inv.mag &
 
 
-3. #### Create port definition
+### Create port definition
 
 Once the layout is ready, the next step is extracting the LEF file for the cell. However, certain properties and definitions need to be set to the pins of the cell which aid the placer and router tool. For LEF files, a cell that contains ports is written as a macro cell, and the ports are the declared PINs of the macro. Our objective is to extract LEF from a given layout (here of a simple CMOS inverter) in standard format. Defining port and setting correct class and use attributes to each port is the first step. The easiest way to define a port is through Magic Layout window and following are the steps:
 
-- In Magic Layout window, first source the .mag file for the design. Then Edit >> Text which opens up a dialogue box.
+- In Magic Layout window, first source the .mag file for the design. Then ```Edit >> Text``` which opens up a dialogue box.
 
 - For each layer, make a box on that particular layer and input a label name along with a sticky label of the layer name with which the port needs to be associated, ensure the port enable checkbox box is checked and default checkbox is unchecked as shown below:
 
@@ -162,7 +141,7 @@ The number mentioned in the text area next to the enable checkbox defines the or
 For power and ground layer, can be done in same or different layer. Here, we have connected gnd and power are taken from metal 1 ( notice the text area beside sticky checkbox )
 
 
-4. #### Set port class and port use attributes
+### Set port class and port use attributes
 
 Once the port definition is done, the next step is to set port class and port use attributes. The "class" and "use" properties of the port have no internal meaning to magic but are used by the LEF and DEF format read and write routines, and match the LEF/DEF CLASS and USE properties for macro cell pins.
 ![port_def.png](https://github.com/gagana-05/Term-Project/blob/main/images/port_def.png)
@@ -171,8 +150,31 @@ Once the port definition is done, the next step is to set port class and port us
 
 Certain properties need to be set before writing the LEF. There are specific property names associated with the LEF format. Once the properties are set, lef write command write the LEF file with the same nomenclature as that of the magic layout file.
 
+![image](https://user-images.githubusercontent.com/82756709/230839326-d3f5ce3a-1ae4-4d89-908b-6b75d1731015.png)
+
+### Extracting Spice file via magic 
+
+Run the following commands in magic tkcon window to extract spice file:
+
+```text
+extract all
+ext2spice cthresh 0 rthresh 0
+ext2spice
+```
+
+In order to simulate the spice file necessary libraries and simulation source code is included, and model names are modified to given MOSFET definitions within the library. <br>
+Simulation results: <hr>
+
+![image](https://user-images.githubusercontent.com/82756709/230841613-0e1199f7-c5a0-4c2a-9289-0bbaf5f2f44f.png)
+![image](https://user-images.githubusercontent.com/82756709/230841618-0d8765da-5072-4a46-a5e3-9136e0873edc.png)
+
+
+
 
 ## Plugging Custom LEF to OpenLane
+
+In order to include the new standard cell in the synthesis, copy the sky130_vsdinv.lef file to the ```designs/femto/src directory```
+Since abc maps the standard cell to a library abc there must be a library that defines the CMOS inverter. The sky130_fd_sc_hd__typical.lib file from [link](https://github.com/nickson-jose/vsdstdcelldesign/tree/master/libs) to be copied to the ```designs/femto/src directory``` (Note: the slow and fast library files may also be copied and modified according to custom cell design).
 
 Open OpenLane Directory and enter:
 
@@ -189,7 +191,7 @@ List of commands:
 
 ## Synthesis Exploration 
 
-The first decision in synthesis is determining the optimal synthesis strategy SYNTH_STRATEGY for your design. For that purpose there is a flag in the flow.tcl script, -synth_explore that runs a synthesis strategy exploration and reports the results in a table in a html file under `femto/reports/`.
+The first step in synthesis is determining the optimal synthesis strategy SYNTH_STRATEGY for your design. For that purpose there is a flag in the flow.tcl script, -synth_explore that runs a synthesis strategy exploration and reports the results in a table in a html file under `femto/reports/`.
 
 ```bash
 ./flow.tcl -design design_name -synth_explore
@@ -339,6 +341,63 @@ magic -T /home/gagana/OpenLane/pdks/sky130A/libs.tech/magic/sky130A.tech lef rea
 Power distribution network generation is usually a part of the floorplan step. However, in the openLANE flow, floorplan does not generate PDN. The steps are - floorplan, placement CTS and then PDN
 
 
+List of commands to be run in a sequential manner to complete the overall flow for RTL to GDSII layout
+
+```text
+run_cts
+run_routing
+write_powered_verilog 
+set_netlist $::env(routing_logs)/$::env(femto).powered.v
+run_magic
+run_magic_spice_export
+run_magic_drc
+run_lvs
+run_antenna_check
+
+```
+
+## Observation
+
+> post-synthesis
+![image](https://user-images.githubusercontent.com/82756709/230839672-e4632d55-968a-4a99-87c0-e0a0a1206dd6.png)
+
+
+### Identifying custom made cell
+
+```bash
+getcell sky130_vsdinv
+```
+
+![image](https://user-images.githubusercontent.com/82756709/230839597-f2d27d49-9763-45a7-8025-ec7c1014b187.png)
+
+### Cell After placement
+
+![image](https://user-images.githubusercontent.com/82756709/230839797-2bee0f42-c07a-41ef-bc88-e6f5e4d6cdb3.png)
+
+### Reports
+
+#### Area
+![image](https://user-images.githubusercontent.com/82756709/230839900-5756efe1-0bc1-4615-9a78-db8fd7061612.png)
+
+#### Core Area
+
+![image](https://user-images.githubusercontent.com/82756709/230840002-b8faa6f0-5eb1-443e-9b11-16d9de026e32.png)
+
+#### Die Area
+
+![image](https://user-images.githubusercontent.com/82756709/230840233-4bee0099-8e34-49cd-b391-b0979a7c061e.png)
+
+
+####  Power (Total, Internal, Switching, Leakage)
+
+![image](https://user-images.githubusercontent.com/82756709/230840272-7644a70c-0895-4cf8-bbe4-15093f5e2619.png)
+
+
+## Team Members
+
+- Gaganashree (201EC228)
+- Priyanka Gawande (201EC250)
+
 ## Challenges
 
 Very Helpful source : [Timing Closure of OpenSource Designs](https://docs.google.com/document/d/13J1AY1zhzxur8vaFs3rRW9ZWX113rSDs63LezOOoXZ8/edit#)
@@ -390,26 +449,16 @@ Issue #2 : Configuring the config.json file to remove fanout violation
 OpenLane Flow:
 max fanout violation count : <b>91</b>
 
-
 <b>Setting</b>:
-"SYNTH_MAX_FANOUT": 20
+"SYNTH_MAX_FANOUT": 50
 
-OpenLane Flow: 
-max fanout violation count: <b>12</b>
+Issue #3: Flow fails when executing run_routing in interactive flow
 
-<b>Setting:</b>
-"SYNTH_MAX_FANOUT": 30 <br>
+> Opening logs file
 
-OpenLane Flow:
-max fanout violation count: <b>6</b>
+![image](https://user-images.githubusercontent.com/82756709/230842139-0e12f7a9-f118-49f9-a22f-d0ca92fb35d7.png)
 
-Observation:
 
-- We observe that as the limit to max fanout at output is increased, fanout after the design flow also increases. (Not sure why?)
-
-We will try resolving this warning a little later and move on to next step of synthesizing the module
-
-#### Issue 3
 
 
 
